@@ -6,6 +6,23 @@ Pre-processing and analysis of gpx tracks (activities) for comparison to an exis
 ### Usage 
 - Example GPX tracks are available at `https://github.com/danielvogler/gpx_processing/tree/main/gpx_files`
 - Example usage demonstrated in `./geopard_example`
+- Example usage:
+
+```
+import geopard
+
+### initialize
+gp = geopard.Geopard()
+
+### dtw matching of example segments/activities
+final_time, final_dtw = gp.dtw_match(gold_name, activity_name)
+
+### optional with:
+### min_trkps - minimum number of trackpoints between start and finish
+### radius - radius around start and finish of gold segment
+### dtw_threshold - segment match quality
+final_time, final_dtw = gp.dtw_match(gold_name, activity_name, min_trkps = 100, radius=15, dtw_threshold=0.3)
+```
 
 ### Dependencies
 Python libraries:
