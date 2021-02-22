@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
 import similaritymeasures
+import sys
 
 class Geopard:
 
@@ -168,9 +169,9 @@ class Geopard:
 
         ### check if nearby points were found
         if not idx:
-            print("\nNo trackpoints found near centroid\n")
-            exit()
-            return -1, -1
+            print("\nNo trackpoints found near centroid")
+            sys.exit(1)
+            return
 
         ### lat, lon, ele, time, distance of all nearest neighbours
         lat   = [gpx_data[0,i] for i in idx]
