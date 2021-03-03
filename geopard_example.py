@@ -30,7 +30,7 @@ activity_name = "tds_sunnestube_activity_25_25.gpx"          # 0:25:22
 # activity_name = "nordicstar_weltcup_activity_25_52.gpx"    # 0:25:35
 
 ### example - one-way cross-country ski
-### dtw=0.09671, radius=4m, t=0:25:26
+### dtw=0.09671, radius=4m, t=0:44:26
 # gold_name = "nordicstar_dischmatal_segment.gpx"
 # activity_name = "nordicstar_dischmatal_activity_44_39.gpx" # 0:44:37
 
@@ -70,7 +70,7 @@ Track matching
 gp = Geopard()
 
 ### dtw matching of example segments/activities
-final_time, final_dtw = gp.dtw_match(folder_path+gold_name, folder_path+activity_name,radius=radius)
+final_time, final_dtw, match_flag = gp.dtw_match(folder_path+gold_name, folder_path+activity_name,radius=radius)
 
 """
 Track plotting
