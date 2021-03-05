@@ -1,8 +1,8 @@
 from setuptools import setup
 setup(name='geopard',
-      version='0.1.3',
+      version='0.1.4',
       description='Matching of gpx segments with dynamic time warping',
-      url='https://github.com/geopard-py/geopard',
+      url='https://github.com/danielvogler/geopard',
       author='Daniel Vogler',
       author_email='geopard.py@gmail.com',
       license='MIT',
