@@ -25,14 +25,10 @@ final_time, final_dtw = gp.dtw_match(gold_name, activity_name, min_trkps = 100, 
 ```
 
 ### Dependencies
-Python libraries:
 
-* gpxpy (`pip install gpxpy`)
-* haversine (`pip install haversine`)
-* similaritymeasures (`pip install similaritymeasures`)
-* numpy
-* matplotlib
+Install python dependencies with pip:
 
+`pip install -r requirements.txt`
 
 ![Example image](/images/example_track.png "Example of gpx crop")
 Example of gold segment, total activity and activity cropped to gold segment length.
