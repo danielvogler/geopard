@@ -1,6 +1,6 @@
 from setuptools import setup
 setup(name='geopard',
-      version='0.1.4',
+      version='0.1.5',
       description='Matching of gpx segments with dynamic time warping',
       url='https://github.com/danielvogler/geopard',
       author='Daniel Vogler',
