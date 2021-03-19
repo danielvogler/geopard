@@ -15,13 +15,28 @@ import geopard
 gp = geopard.Geopard()
 
 ### dtw matching of example segments/activities
-final_time, final_dtw = gp.dtw_match(gold_name, activity_name)
+response = gp.dtw_match(gold_name, activity_name)
 
 ### optional with:
 ### min_trkps - minimum number of trackpoints between start and finish
 ### radius - radius around start and finish of gold segment
 ### dtw_threshold - segment match quality
-final_time, final_dtw = gp.dtw_match(gold_name, activity_name, min_trkps = 100, radius=15, dtw_threshold=0.3)
+response = gp.dtw_match(gold_name, activity_name, min_trkps = 100, radius=15, dtw_threshold=0.3)
+
+### GeopardResponse
+
+# final time
+response.time
+
+# final dtw
+response.dtw
+
+# match flag
+response.match_flag
+
+# is_success and error
+response.is_success
+response.error
 ```
 
 ### Dependencies
