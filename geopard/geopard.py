@@ -12,6 +12,36 @@ from scipy.interpolate import splprep, splev
 import similaritymeasures
 import sys
 
+class GeopardException(Exception):
+    pass
+
+class GeopardResponse:
+    time = None
+    dtw = 0
+    match_flag = 0
+    error = 0
+
+    def __init__(self, time, dtw, match_flag, error=None):
+        self.time = time
+        self.dtw = dtw
+        self.match_flag = match_flag
+        self.error = error
+
+    def time(self):
+        return self.time
+
+    def dtw(self):
+        return self.dtw
+
+    def match_flag(self):
+        return self.match_flag
+
+    def error(self):
+        return self.error
+
+    def is_success(self):
+        return self.match_flag > 0
+
 class Geopard:
 
     ### prepare gpx tracks for dtw matching
@@ -28,12 +58,16 @@ class Geopard:
 
         ### load activity data to be edited
         trkps = self.gpx_loading(activity_name)
-        ### crop activity data to segment length
-        gpx_cropped = self.gpx_track_crop(gold, trkps, radius)
 
-        ### find potential start/end trackpoints
-        nn_start, nn_start_idx = self.nearest_neighbours(gpx_cropped,gold[:4,0],radius)
-        nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_cropped,gold[:4,-1],radius)
+        try:
+            ### crop activity data to segment length
+            gpx_cropped = self.gpx_track_crop(gold, trkps, radius)
+
+            ### find potential start/end trackpoints
+            nn_start, nn_start_idx = self.nearest_neighbours(gpx_cropped,gold[:4,0],radius)
+            nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_cropped,gold[:4,-1],radius)
+        except GeopardException as e:
+            return GeopardResponse(None, None, -2, str(e))
 
         ### tested combinations of start/end points
         combinations_to_test = 0
@@ -116,12 +150,12 @@ class Geopard:
             print("Final T [s]:  " , (final_time) )
             print("Final DTW (y): %2.5f"% (final_dtw) )
 
-            return final_time, final_dtw, match_flag
+            return GeopardResponse(final_time, final_dtw, match_flag)
 
         else:
             print("\nNo segment match found")
 
-            return "99:99:99", dtw, match_flag
+            return GeopardResponse(None, dtw, match_flag)
 
 
 
@@ -190,7 +224,7 @@ class Geopard:
 
         ### check if nearby points were found
         if not idx:
-            raise Exception('No trackpoints found near centroid')
+            raise GeopardException('No trackpoints found near centroid')
 
         ### lat, lon, ele, time, distance of all nearest neighbours
         lat   = [gpx_data[0,i] for i in idx]

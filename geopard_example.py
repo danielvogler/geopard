@@ -23,6 +23,11 @@ gold_name = "tds_sunnestube_segment.gpx"
 activity_name = "tds_sunnestube_activity_25_25.gpx"          # 0:25:22
 # activity_name = "tds_sunnestube_activity_25_55.gpx"        # 0:25:55
 # activity_name = "tds_sunnestube_activity_25_39.gpx"        # 0:25:39
+# gold_name = "strava.segments.25881647.TdU2_-Chez-le-Coiffeur.gpx"
+# activity_name = "strava.activities.1108969469.Uetzgi-.gpx"
+gold_name = "strava-segments-26694751.tds1_sunnestube-605459c1ce1de130091189.gpx"
+# activity_name = "4786250737-wixoox-6053d46bbc2ca546371668.gpx"
+activity_name = "4780044736-7ruftv-6053d4ee33ca3008909763.gpx"
 
 ### example - two loops
 ### dtw=0.06490, radius=34m, t=0:25:46
@@ -60,7 +65,7 @@ activity_name = "tds_sunnestube_activity_25_25.gpx"          # 0:25:22
 # activity_name = "th1_ttb.gpx"
 
 ### radius (m) around start/end trackpoints
-radius = 15
+radius = 1
 
 """
 Track matching
@@ -70,7 +75,16 @@ Track matching
 gp = Geopard()
 
 ### dtw matching of example segments/activities
-final_time, final_dtw, match_flag = gp.dtw_match(folder_path+gold_name, folder_path+activity_name,radius=radius)
+geopard_response = gp.dtw_match(folder_path+gold_name, folder_path+activity_name,radius=radius)
+
+if not geopard_response.is_success():
+    print("\n----- Matching not successful -----")
+    print("Error:" , geopard_response.error)
+    exit(-1)
+
+final_time = geopard_response.time
+final_dtw = geopard_response.dtw
+match_flag = geopard_response.match_flag
 
 """
 Track plotting
