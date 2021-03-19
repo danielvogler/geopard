@@ -18,12 +18,16 @@ class GeopardException(Exception):
 class GeopardResponse:
     time = None
     dtw = 0
+    start_point = None
+    end_point = None
     match_flag = 0
     error = 0
 
-    def __init__(self, time, dtw, match_flag, error=None):
+    def __init__(self, time, dtw, start_point, end_point, match_flag, error=None):
         self.time = time
         self.dtw = dtw
+        self.start_point = start_point
+        self.end_point = end_point
         self.match_flag = match_flag
         self.error = error
 
@@ -32,6 +36,12 @@ class GeopardResponse:
 
     def dtw(self):
         return self.dtw
+
+    def start_point(self):
+        return self.start_point
+
+    def end_point(self):
+        return self.end_point
 
     def match_flag(self):
         return self.match_flag
@@ -67,7 +77,7 @@ class Geopard:
             nn_start, nn_start_idx = self.nearest_neighbours(gpx_cropped,gold[:4,0],radius)
             nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_cropped,gold[:4,-1],radius)
         except GeopardException as e:
-            return GeopardResponse(None, None, -2, str(e))
+            return GeopardResponse(None, None, None, None, -2, str(e))
 
         ### tested combinations of start/end points
         combinations_to_test = 0
@@ -122,6 +132,8 @@ class Geopard:
                 ### update final time and dtw
                 final_time = delta_time
                 final_dtw = dtw
+                final_start_point = gpx_cropped[:,seg_sort[s][1]]
+                final_end_point = gpx_cropped[:,seg_sort[s][2]]
                 match_flag = 1
 
             ### check if soft dtw threshold is observed. 
@@ -132,6 +144,8 @@ class Geopard:
                 ### update final time and dtw
                 final_time = delta_time
                 final_dtw = dtw
+                final_start_point = gpx_cropped[:,seg_sort[s][1]]
+                final_end_point = gpx_cropped[:,seg_sort[s][2]]
                 match_flag = 2
 
         print("\n----- Finished DTW segment match -----")
@@ -150,12 +164,12 @@ class Geopard:
             print("Final T [s]:  " , (final_time) )
             print("Final DTW (y): %2.5f"% (final_dtw) )
 
-            return GeopardResponse(final_time, final_dtw, match_flag)
+            return GeopardResponse(final_time, final_dtw, final_start_point, final_end_point, match_flag)
 
         else:
             print("\nNo segment match found")
 
-            return GeopardResponse(None, dtw, match_flag)
+            return GeopardResponse(None, dtw, None, None, match_flag)
 
 
 
