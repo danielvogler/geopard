@@ -5,8 +5,9 @@ Pre-processing and analysis of gpx tracks (activities) for comparison to an exis
 
 ### Usage 
 - Example GPX tracks are available at [https://github.com/danielvogler/geopard_tests](https://github.com/danielvogler/geopard_tests)
+- Example files for construction of start/finish region in `./utils/`
 - Example usage demonstrated in `./geopard_example`
-- Example usage:
+- Example usage with circular start region around gold start/end points:
 
 ```
 import geopard
@@ -22,6 +23,42 @@ response = gp.dtw_match(gold_name, activity_name)
 ### radius - radius around start and finish of gold segment
 ### dtw_threshold - segment match quality
 response = gp.dtw_match(gold_name, activity_name, min_trkps = 100, radius=15, dtw_threshold=0.3)
+
+### GeopardResponse
+
+# final time
+response.time
+
+# final dtw
+response.dtw
+
+# final start point
+response.start_point
+
+# final end point
+response.end_point
+
+# match flag
+response.match_flag
+
+# is_success and error
+response.is_success
+response.error
+```
+
+
+- Example usage with start/finish regions:
+
+```
+import geopard
+
+start_region = "./utils/example_start_region.csv"
+finish_region = "./utils/example_finish_region.csv"
+
+### initialize
+gp = geopard.Geopard()
+
+geopard_response = gp.dtw_match(folder_path+gold_name, folder_path+activity_name, start_region=start_region, finish_region=finish_region)
 
 ### GeopardResponse
 
