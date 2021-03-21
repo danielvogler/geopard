@@ -55,10 +55,13 @@ import geopard
 start_region = "./utils/example_start_region.csv"
 finish_region = "./utils/example_finish_region.csv"
 
+gold_name = './gpx_files/tds_sunnestube_segment.gpx'
+activity_name = './gpx_files/tds_sunnestube_activity_25_25.gpx'
+
 ### initialize
 gp = geopard.Geopard()
 
-geopard_response = gp.dtw_match(folder_path+gold_name, folder_path+activity_name, start_region=start_region, finish_region=finish_region)
+response = gp.dtw_match(gold_name, activity_name, start_region=start_region, finish_region=finish_region)
 
 ### GeopardResponse
 
