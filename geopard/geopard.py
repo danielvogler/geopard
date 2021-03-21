@@ -11,6 +11,9 @@ from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
 import similaritymeasures
 import sys
+import csv
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
 
 class GeopardException(Exception):
     pass
@@ -57,8 +60,9 @@ class Geopard:
     ### prepare gpx tracks for dtw matching
     ### find all suitable start/end point combinations
     ### determine shortest segment match
-    def dtw_match(self,gold_name,activity_name, min_trkps = 50, radius=7, dtw_threshold=0.2, dtw_margin_range=1.5):
+    def dtw_match(self,gold_name,activity_name, min_trkps = 50, radius=7, dtw_threshold=0.2, dtw_margin_range=1.5, start_region=None, finish_region=None):
 
+        print('Starting DTW match')
         start_time = datetime.now()
 
         ### load gold standard/baseline segment
@@ -71,11 +75,12 @@ class Geopard:
 
         try:
             ### crop activity data to segment length
-            gpx_cropped = self.gpx_track_crop(gold, trkps, radius)
+            gpx_cropped = self.gpx_track_crop(gold, trkps, radius, start_region, finish_region)
 
             ### find potential start/end trackpoints
-            nn_start, nn_start_idx = self.nearest_neighbours(gpx_cropped,gold[:4,0],radius)
-            nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_cropped,gold[:4,-1],radius)
+            nn_start, nn_start_idx = self.nearest_neighbours(gpx_cropped,gold[:4,0], radius, start_region)
+            nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_cropped,gold[:4,-1], radius, finish_region)
+
         except GeopardException as e:
             return GeopardResponse(None, None, None, None, -2, str(e))
 
@@ -172,8 +177,6 @@ class Geopard:
             return GeopardResponse(None, dtw, None, None, match_flag)
 
 
-
-
     ### Load gpx file and extract information
     def gpx_loading(self,file_name):
 
@@ -203,14 +206,13 @@ class Geopard:
 
 
     ### filter gpx data occurring between two points
-    def gpx_track_crop(self,gold,gpx_data,radius):
+    def gpx_track_crop(self, gold, gpx_data, radius=None, start_region=None, finish_region=None):
+
+        print('\n   Cropping GPX track')
 
         ### find possible start/end trackpoints
-        nn_start, nn_start_idx = self.nearest_neighbours(gpx_data,gold[:4,0],radius)
-        nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_data,gold[:4,-1],radius)
-
-        print("\nPoints of activity within {}m of gold start: {}".format(radius, len(nn_start_idx) ) )
-        print("Points of activity within {}m of gold finish: {}".format(radius, len(nn_finish_idx) ) )
+        nn_start, nn_start_idx = self.nearest_neighbours(gpx_data,gold[:4,0], radius, start_region)
+        nn_finish, nn_finish_idx = self.nearest_neighbours(gpx_data,gold[:4,-1], radius, finish_region)
 
         ### determine time range for gpx track
         nn_start_earliest = min(nn_start[3])
@@ -228,13 +230,39 @@ class Geopard:
 
 
     ### find nearest neighbouring points of input point
-    def nearest_neighbours(self,gpx_data,centroid,radius):
+    def nearest_neighbours(self, gpx_data, centroid=None, radius=None, region=None):
+        
+        print('\n\tFinding nearest neighbours ...')
 
-        ### distance (m) of all points to centroid
-        distance = [haversine(i, centroid[:2]) * 1000 for i in gpx_data[:4,:][:2].T ]
+        ### polygon region is given to find NN
+        if region is not None:
 
-        ### points within radius distance of centroid
-        idx = [int(i) for i, x in enumerate(distance) if x < radius]
+            ### region polygon
+            region_polygon = self.create_polygon(region)
+            
+            ### Convert track coordinates to points
+            points = [Point(reversed(i)) for i in gpx_data[:4,:][:2].T]
+
+            idx = []
+            ### go through all gpx track points
+            for i in range( len(points) ):
+
+                ### check if track points are within region polygon
+                if region_polygon.contains( points[i] ) == True:
+                    idx.append( int(i) )
+
+            print('\t{} NN within region polygon: {}'.format( len(idx), region) )
+
+        ### no polygon region given - default to circle around start
+        else:
+
+            ### distance (m) of all points to centroid
+            distance = [haversine(i, centroid[:2]) * 1000 for i in gpx_data[:4,:][:2].T ]
+
+            ### points within radius distance of centroid
+            idx = [int(i) for i, x in enumerate(distance) if x < radius]
+
+            print('\t{} NN within radius of {}m near centroid: {}'.format( len(idx), radius, centroid[:2]) )
 
         ### check if nearby points were found
         if not idx:
@@ -245,8 +273,8 @@ class Geopard:
         lon   = [gpx_data[1,i] for i in idx]
         ele   = [gpx_data[2,i] for i in idx]
         time  = [gpx_data[3,i] for i in idx]
-        dis   = [distance[i] for i in idx]
-        nn = np.asarray([lat, lon, ele, time, dis])
+        # dis   = [distance[i] for i in idx]
+        nn = np.asarray([lat, lon, ele, time])
 
         return nn, idx
 
@@ -294,6 +322,22 @@ class Geopard:
         points[:, 1] = lon
 
         return points
+
+
+    ### create polygon geometry from csv files
+    def create_polygon(self, file_name):
+
+        region = []
+        ### read in lat/lon and conver to points
+        with open(file_name, newline='') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                region.append(Point([float(row['Longitude']), float(row['Latitude'])]))
+
+        ### convert points to polygon
+        poly = Polygon([[p.x, p.y] for p in region])
+
+        return poly
 
 
     ### plot gpx track
