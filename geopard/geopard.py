@@ -139,7 +139,7 @@ class Geopard:
                 final_dtw = dtw
                 final_start_point = gpx_cropped[:,seg_sort[s][1]]
                 final_end_point = gpx_cropped[:,seg_sort[s][2]]
-                match_flag = 1
+                match_flag = 2
 
             ### check if soft dtw threshold is observed. 
             ### only save dtw value and time for shortest (first) match in grey zone 
@@ -151,7 +151,7 @@ class Geopard:
                 final_dtw = dtw
                 final_start_point = gpx_cropped[:,seg_sort[s][1]]
                 final_end_point = gpx_cropped[:,seg_sort[s][2]]
-                match_flag = 2
+                match_flag = 1
 
         print("\n----- Finished DTW segment match -----")
 
