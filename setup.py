@@ -1,13 +1,9 @@
 from setuptools import setup
 
-def readme():
-    with open('README.rst') as f:
-        return f.read()
-
 setup(name='geopard',
       version='0.1.10',
       description='Matching of gpx segments with dynamic time warping',
-      long_description=readme(),
+      long_description='Matching of gpx segments with dynamic time warping. Pre-processing and analysis of gpx tracks (activities) for comparison to an existing gpx track (gold standard, segment). Checked are the joint start and end points with a given tolerance to trim the activity. Both tracks are interpolated to allow for both curves to be compared with dynamic time warping. Dynamic time warping allows to assess whether the activity actually completed the gold standard segment, and what the shortest required time was (in case of multiple repetitions or many points of the activity within the allowed distance of start and end points).',
       # long_description_content_type ='text/markdown',
       url='https://github.com/danielvogler/geopard',
       author='Daniel Vogler, Sebastian de Castelberg',
