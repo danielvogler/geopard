@@ -119,6 +119,7 @@ class Geopard:
         final_dtw = 1e6
         match_flag = -1
         dtw_threshold_soft = dtw_threshold * dtw_margin_range
+        dtw = None
 
         ### compute dtw in ascending order
         ### return if shortest activity satisfies dtw requirement
@@ -159,7 +160,9 @@ class Geopard:
         print("Total combinations tested:" , (s+1) )
 
         print("\nTotal execution time:", datetime.now() - start_time)
-        print("Execution time per combination:" , ((datetime.now() - start_time)/(s+1)) )
+
+        if s > -1:
+            print("Execution time per combination:" , ((datetime.now() - start_time)/(s+1)) )
 
         print("\nMatch flag [-]:  ", (match_flag) )
 
