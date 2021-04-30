@@ -1,13 +1,14 @@
 from setuptools import setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+def readme():
+    with open('README.rst') as f:
+        return f.read()
 
 setup(name='geopard',
-      version='0.1.9',
+      version='0.1.10',
       description='Matching of gpx segments with dynamic time warping',
-      long_description=long_description,
-      long_description_content_type ="text/markdown",
+      long_description=readme(),
+      # long_description_content_type ='text/markdown',
       url='https://github.com/danielvogler/geopard',
       author='Daniel Vogler, Sebastian de Castelberg',
       author_email='geopard.py@gmail.com',
