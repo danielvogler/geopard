@@ -73,6 +73,15 @@ class Geopard:
         ### load activity data to be edited
         trkps = self.gpx_loading(activity_name)
 
+        ### check if gpx track [lat, lon, ele, time] is complete. Missing elevation data is accepted
+        for k in [0, 1, 3]:
+            none_idx = [i for i in range(len(trkps[k])) if trkps[k,i] == None] 
+
+            ### error if required gpx track information is missing
+            if none_idx:
+                raise GeopardException('GPX file corrupted. Check GPX points (E.g. {})'.format( sorted( set(none_idx) )[:3] ) )
+
+        ### search activity trackpoints matching with gold start/end
         try:
             ### crop activity data to segment length
             gpx_cropped = self.gpx_track_crop(gold, trkps, radius, start_region, finish_region)
@@ -196,6 +205,7 @@ class Geopard:
         ### load relevant gpx data
         for track in gpx_data.tracks: 
             for segment in track.segments: 
+
                 for i in range(0,len(segment.points)-1):
                     trkp_point = segment.points[i]
                     trkp_lat.append(trkp_point.latitude)
