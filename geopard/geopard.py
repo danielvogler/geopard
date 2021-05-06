@@ -213,6 +213,20 @@ class Geopard:
                     trkp_ele.append(trkp_point.elevation)
                     trkp_time.append(trkp_point.time)
 
+        ### check for duplicate lat/lon trackpoints
+        duplicates_lat = [i for i in range(1,len(trkp_lat)-1) if trkp_lat[i] == trkp_lat[i-1] and trkp_lat[i] == trkp_lat[i+1] ]
+        duplicates_lon = [i for i in range(1,len(trkp_lon)-1) if trkp_lon[i] == trkp_lon[i-1] and trkp_lon[i] == trkp_lon[i+1] ]
+
+        ### duplicate values for both lat and lon
+        duplicates_lat_lon = sorted( list( set(duplicates_lat) & set(duplicates_lon) ) )
+
+        ### remove redundant trackpoints
+        trkp_lat  = np.delete( trkp_lat, duplicates_lat_lon, 0)
+        trkp_lon  = np.delete( trkp_lon, duplicates_lat_lon, 0)
+        trkp_ele  = np.delete( trkp_ele, duplicates_lat_lon, 0)
+        trkp_time = np.delete( trkp_time, duplicates_lat_lon, 0)
+
+        ### merge lat, lon, ele, time into one array
         trkps = np.asarray([trkp_lat, trkp_lon, trkp_ele, trkp_time])
 
         return trkps
