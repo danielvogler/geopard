@@ -3,16 +3,16 @@ Daniel Vogler
 geopard
 """
 
-import gpxpy # pip3 install gpxpy
+from gpxpy import parse # pip3 install gpxpy
 from haversine import haversine # pip3 install haversine
 import numpy as np
 from math import radians, asin, sqrt, sin, cos
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
-import similaritymeasures
+from similaritymeasures import dtw as sm_dtw
 import sys
-import csv
+from csv import DictReader
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
@@ -195,7 +195,7 @@ class Geopard:
 
         ### load file
         gpx_data_open = open(file_name)
-        gpx_data = gpxpy.parse(gpx_data_open)
+        gpx_data = parse(gpx_data_open)
 
         ### initialize lat/lon
         trkp_lat = []
@@ -337,7 +337,7 @@ class Geopard:
         gpx_data_interpolated = self.interpolate(gpx_data)
 
         ### compute dynamic time warping
-        dtw, d = similaritymeasures.dtw(gpx_data_interpolated, gold)
+        dtw, d = sm_dtw(gpx_data_interpolated, gold)
 
         print("\nDTW (y): %2.5f"% (dtw) )
         print("T [s]:  " , (delta_time) )
@@ -378,7 +378,7 @@ class Geopard:
         region = []
         ### read in lat/lon and conver to points
         with open(file_name, newline='') as f:
-            reader = csv.DictReader(f)
+            reader = DictReader(f)
             for row in reader:
                 region.append(Point([float(row['Longitude']), float(row['Latitude'])]))
 

@@ -6,7 +6,7 @@ geopard example
 from geopard.geopard import Geopard
 from matplotlib import pyplot as plt
 
-folder_path = "gpx_files/"
+folder_path = "../gpx_files/"
 
 """
 Example activities

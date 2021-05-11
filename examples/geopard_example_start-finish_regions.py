@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 ### initialize
 gp = Geopard()
 
-folder_path = "gpx_files/"
+folder_path = "../gpx_files/"
 
 """
 Example activities
@@ -19,8 +19,8 @@ Example activities
 ### dtw=0.09702, radius=7m, t=0:25:22
 gold_name = "tds_sunnestube_segment.gpx"
 activity_name = "tds_sunnestube_activity_25_25.gpx"          # 0:25:22
-start_region = "./utils/example_start_region.csv"
-finish_region = "./utils/example_finish_region.csv"
+start_region = "../utils/example_start_region.csv"
+finish_region = "../utils/example_finish_region.csv"
 
 """ 
 plotting data
