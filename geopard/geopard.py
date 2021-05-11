@@ -6,6 +6,7 @@ geopard
 import gpxpy # pip3 install gpxpy
 from haversine import haversine # pip3 install haversine
 import numpy as np
+from math import radians, asin, sqrt, sin, cos
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
@@ -285,6 +286,7 @@ class Geopard:
 
             ### distance (m) of all points to centroid
             distance = [haversine(i, centroid[:2]) * 1000 for i in gpx_data[:4,:][:2].T ]
+            # distance = [self.spheroid_point_distance(i, centroid[:2]) for i in gpx_data[:4,:][:2].T ]
 
             ### points within radius distance of centroid
             idx = [int(i) for i, x in enumerate(distance) if x < radius]
@@ -304,6 +306,25 @@ class Geopard:
         nn = np.asarray([lat, lon, ele, time])
 
         return nn, idx
+
+
+    ### determine great-circle distance of two coordinate points on a sphere
+    def spheroid_point_distance(self,coordinates_1, coordinates_2):
+        
+        avg_earth_radius = 6371008.7714 # [m] https://doi.org/10.1007/s001900050278
+
+        lat_1 = radians(coordinates_1[0])
+        lat_2 = radians(coordinates_2[0])
+        lon_1 = radians(coordinates_1[1])
+        lon_2 = radians(coordinates_2[1])
+
+        delta_lat = ( lat_2 - lat_1 ) / 2
+        delta_lon = ( lon_2 - lon_1 ) / 2
+
+        ### from haversine formlua: https://en.wikipedia.org/wiki/Haversine_formula
+        distance = 2 * avg_earth_radius * asin( sqrt( sin(delta_lat)**2 + cos(lat_1) * cos(lat_2) * sin(delta_lon)**2 ) )
+
+        return distance
 
 
     ### dynamic time warping between two gpx-track curves
