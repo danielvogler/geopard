@@ -265,9 +265,6 @@ class Geopard:
         ### polygon region is given to find NN
         if region is not None:
 
-            ### region polygon
-            region_polygon = self.create_polygon(region)
-            
             ### Convert track coordinates to points
             points = [Point(reversed(i)) for i in gpx_data[:4,:][:2].T]
 
@@ -276,7 +273,7 @@ class Geopard:
             for i in range( len(points) ):
 
                 ### check if track points are within region polygon
-                if region_polygon.contains( points[i] ) == True:
+                if region.contains( points[i] ) == True:
                     idx.append( int(i) )
 
             print('\t{} NN within region polygon: {}'.format( len(idx), region) )
