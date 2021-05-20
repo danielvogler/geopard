@@ -10,6 +10,7 @@ from math import radians, asin, sqrt, sin, cos
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
+from scipy.spatial.distance import cdist
 from similaritymeasures import dtw as sm_dtw
 import sys
 from csv import DictReader
@@ -324,6 +325,43 @@ class Geopard:
         return distance
 
 
+    ### accumulated cost matrix
+    def acm(self, reference, query, distance_metric='cityblock'):
+
+        '''
+        (1) Müller, Meinard. Information retrieval for music and motion. Vol. 2. 
+            Heidelberg: Springer, 2007. https://doi.org/10.1007/978-3-540-74048-3
+
+        '''
+
+        ### compute cost matrix
+        # cm = self.cost_matrix(reference, query)
+        cm = cdist(reference, query, metric=distance_metric)
+
+        ### sequence lengths
+        N, M = cm.shape
+
+        ### initialize
+        acm = np.zeros( [N, M] )
+
+        ### boundary condition 1
+        acm[0,0] = cm[0,0]
+
+        ### From (1) Theorem 4.3
+        ### D(n, 1) = \sum_{k=1}^n c(x_k , y_1 ) for n ∈ [1 : N ], 
+        ### D(1, m) = \sum_{k=1}^n c(x_1 , y_k ) for m ∈ [1 : M ] and
+        acm[1:,0] = [ acm[n-1,0] + cm[n,0] for n in range(1,N) ]
+        acm[0,1:] = [ acm[0,m-1] + cm[0,m] for m in range(1,M) ]
+
+        ### for 1 < n ≤ N and 1 < m ≤ M .
+        ### D(n, m) = min{D(n − 1, m − 1), D(n − 1, m), D(n, m − 1)} + c(x_n , y_m )
+        for n in range(1, N):
+            for m in range(1, M):
+                acm[n, m] = cm[n, m] + min( acm[n-1, m], acm[n, m-1], acm[n-1, m-1]) 
+
+        return acm
+
+
     ### dynamic time warping between two gpx-track curves
     def dtw_computation(self,gpx_data,gold):
 
@@ -335,6 +373,7 @@ class Geopard:
 
         ### compute dynamic time warping
         dtw, d = sm_dtw(gpx_data_interpolated, gold)
+        # dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
 
         print("\nDTW (y): %2.5f"% (dtw) )
         print("T [s]:  " , (delta_time) )
