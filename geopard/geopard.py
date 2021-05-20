@@ -349,9 +349,12 @@ class Geopard:
 
         ### From (1) Theorem 4.3
         ### D(n, 1) = \sum_{k=1}^n c(x_k , y_1 ) for n ∈ [1 : N ], 
+        for n in range(1,N):
+            acm[n,0] = acm[n-1,0] + cm[n,0]
+            
         ### D(1, m) = \sum_{k=1}^n c(x_1 , y_k ) for m ∈ [1 : M ] and
-        acm[1:,0] = [ acm[n-1,0] + cm[n,0] for n in range(1,N) ]
-        acm[0,1:] = [ acm[0,m-1] + cm[0,m] for m in range(1,M) ]
+        for m in range(1,M):
+            acm[0,m] = acm[0,m-1] + cm[0,m]
 
         ### for 1 < n ≤ N and 1 < m ≤ M .
         ### D(n, m) = min{D(n − 1, m − 1), D(n − 1, m), D(n, m − 1)} + c(x_n , y_m )
