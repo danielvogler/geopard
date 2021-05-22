@@ -4,14 +4,12 @@ geopard
 """
 
 from gpxpy import parse # pip3 install gpxpy
-from haversine import haversine # pip3 install haversine
 import numpy as np
 from math import radians, asin, sqrt, sin, cos
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from scipy.interpolate import splprep, splev
 from scipy.spatial.distance import cdist
-from similaritymeasures import dtw as sm_dtw
 import sys
 from csv import DictReader
 from shapely.geometry import Point
@@ -283,8 +281,7 @@ class Geopard:
         else:
 
             ### distance (m) of all points to centroid
-            distance = [haversine(i, centroid[:2]) * 1000 for i in gpx_data[:4,:][:2].T ]
-            # distance = [self.spheroid_point_distance(i, centroid[:2]) for i in gpx_data[:4,:][:2].T ]
+            distance = [self.spheroid_point_distance(i, centroid[:2]) for i in gpx_data[:4,:][:2].T ]
 
             ### points within radius distance of centroid
             idx = [int(i) for i, x in enumerate(distance) if x < radius]
@@ -326,12 +323,11 @@ class Geopard:
 
 
     ### accumulated cost matrix
-    def acm(self, reference, query, distance_metric='cityblock'):
+    def acm(self, reference, query, distance_metric='euclidean'):
 
         '''
         (1) Müller, Meinard. Information retrieval for music and motion. Vol. 2. 
             Heidelberg: Springer, 2007. https://doi.org/10.1007/978-3-540-74048-3
-
         '''
 
         ### compute cost matrix
@@ -375,8 +371,7 @@ class Geopard:
         gpx_data_interpolated = self.interpolate(gpx_data)
 
         ### compute dynamic time warping
-        dtw, d = sm_dtw(gpx_data_interpolated, gold)
-        # dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
+        dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
 
         print("\nDTW (y): %2.5f"% (dtw) )
         print("T [s]:  " , (delta_time) )
