@@ -206,7 +206,7 @@ class Geopard:
         for track in gpx_data.tracks: 
             for segment in track.segments: 
 
-                for i in range(0,len(segment.points)-1):
+                for i in range(0,len(segment.points)):
                     trkp_point = segment.points[i]
                     trkp_lat.append(trkp_point.latitude)
                     trkp_lon.append(trkp_point.longitude)
