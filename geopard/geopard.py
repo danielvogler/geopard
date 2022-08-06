@@ -14,6 +14,9 @@ import sys
 from csv import DictReader
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
+import logging
+
+logging.basicConfig(format="%(thread)d: %(message)s")
 
 class GeopardException(Exception):
     pass
@@ -62,7 +65,7 @@ class Geopard:
     ### determine shortest segment match
     def dtw_match(self,gold_name,activity_name, min_trkps = 50, radius=7, dtw_threshold=0.2, dtw_margin_range=1.5, start_region=None, finish_region=None):
 
-        print('Starting DTW match')
+        logging.warning('Starting DTW match')
         start_time = datetime.now()
 
         ### load gold standard/baseline segment
@@ -163,28 +166,28 @@ class Geopard:
                 final_end_point = gpx_cropped[:,seg_sort[s][2]]
                 match_flag = 1
 
-        print("\n----- Finished DTW segment match -----")
+        logging.warning("----- Finished DTW segment match -----")
 
-        print("\nTotal combinations to test:" , (combinations_to_test) )
-        print("Total combinations tested:" , (s+1) )
+        logging.warning("Total combinations to test:" , (combinations_to_test) )
+        logging.warning("Total combinations tested:" , (s+1) )
 
-        print("\nTotal execution time:", datetime.now() - start_time)
+        logging.warning("Total execution time:", datetime.now() - start_time)
 
         if s > -1:
-            print("Execution time per combination:" , ((datetime.now() - start_time)/(s+1)) )
+            logging.warning("Execution time per combination:" , ((datetime.now() - start_time)/(s+1)) )
 
-        print("\nMatch flag [-]:  ", (match_flag) )
+        logging.warning("Match flag [-]:  ", (match_flag) )
 
 
         ### check if segment match was achieved
         if match_flag > 0:
-            print("Final T [s]:  " , (final_time) )
-            print("Final DTW (y): %2.5f"% (final_dtw) )
+            logging.warning("Final T [s]:  " , (final_time) )
+            logging.warning("Final DTW (y): %2.5f"% (final_dtw) )
 
             return GeopardResponse(final_time, final_dtw, final_start_point, final_end_point, match_flag)
 
         else:
-            print("\nNo segment match found")
+            logging.warning("No segment match found")
 
             return GeopardResponse(None, dtw, None, None, match_flag)
 
@@ -235,7 +238,7 @@ class Geopard:
     ### filter gpx data occurring between two points
     def gpx_track_crop(self, gold, gpx_data, radius=None, start_region=None, finish_region=None):
 
-        print('\n   Cropping GPX track')
+        logging.warning('Cropping GPX track')
 
         ### find possible start/end trackpoints
         nn_start, nn_start_idx = self.nearest_neighbours(gpx_data,gold[:4,0], radius, start_region)
@@ -259,7 +262,7 @@ class Geopard:
     ### find nearest neighbouring points of input point
     def nearest_neighbours(self, gpx_data, centroid=None, radius=None, region=None):
         
-        print('\n\tFinding nearest neighbours ...')
+        logging.warning('Finding nearest neighbours ...')
 
         ### polygon region is given to find NN
         if region is not None:
@@ -275,7 +278,7 @@ class Geopard:
                 if region.contains( points[i] ) == True:
                     idx.append( int(i) )
 
-            print('\t{} NN within region polygon: {}'.format( len(idx), region) )
+            logging.warning('{} NN within region polygon: {}'.format( len(idx), region) )
 
         ### no polygon region given - default to circle around start
         else:
@@ -286,7 +289,7 @@ class Geopard:
             ### points within radius distance of centroid
             idx = [int(i) for i, x in enumerate(distance) if x < radius]
 
-            print('\t{} NN within radius of {}m near centroid: {}'.format( len(idx), radius, centroid[:2]) )
+            logging.warning('{} NN within radius of {}m near centroid: {}'.format( len(idx), radius, centroid[:2]) )
 
         ### check if nearby points were found
         if not idx:
@@ -373,8 +376,8 @@ class Geopard:
         ### compute dynamic time warping
         dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
 
-        print("\nDTW (y): %2.5f"% (dtw) )
-        print("T [s]:  " , (delta_time) )
+        logging.warning("DTW (y): %2.5f"% (dtw) )
+        logging.warning("T [s]:  " , (delta_time) )
 
         return dtw, delta_time
 
