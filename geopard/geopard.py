@@ -377,7 +377,7 @@ class Geopard:
         dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
 
         logging.warning("DTW (y): %2.5f"% (dtw) )
-        logging.warning("T [s]:  " , (delta_time) )
+        logging.warning("T [s]:  %s", (delta_time) )
 
         return dtw, delta_time
 
