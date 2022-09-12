@@ -16,8 +16,6 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import logging
 
-logging.basicConfig(format="%(thread)d: %(message)s")
-
 class GeopardException(Exception):
     pass
 
@@ -142,11 +140,18 @@ class Geopard:
             s += 1
 
             ### compute DTW between gold and activity
-            dtw, delta_time = self.dtw_computation(gpx_cropped[:,seg_sort[s][1]:seg_sort[s][2]+1],gold_interpolated)
+            dtw, delta_time = self.dtw_computation(
+                    gpx_cropped[:,seg_sort[s][1]:seg_sort[s][2]+1],
+                    gold_interpolated
+                    )
+
+            logging.warning(
+                    "DTW (y): %2.5f / T [s]: %s (%s/%s)"
+                    % (dtw, delta_time, s, combinations_to_test) 
+                    )
 
             ### update dtw information if threshold is crossed
             if dtw <= dtw_threshold:
-                
                 ### update final time and dtw
                 final_time = delta_time
                 final_dtw = dtw
@@ -168,21 +173,21 @@ class Geopard:
 
         logging.warning("----- Finished DTW segment match -----")
 
-        logging.warning("Total combinations to test:" , (combinations_to_test) )
-        logging.warning("Total combinations tested:" , (s+1) )
+        logging.warning("Total combinations to test: %s" % (combinations_to_test) )
+        logging.warning("Total combinations tested: %s" % (s+1) )
 
-        logging.warning("Total execution time:", datetime.now() - start_time)
+        logging.warning("Total execution time: %s" % str(datetime.now() - start_time))
 
         if s > -1:
-            logging.warning("Execution time per combination:" , ((datetime.now() - start_time)/(s+1)) )
+            logging.warning("Execution time per combination: %s" % str((datetime.now() - start_time) / (s + 1)))
 
-        logging.warning("Match flag [-]:  ", (match_flag) )
+        logging.warning("Match flag [-]: %s" % (match_flag) )
 
 
         ### check if segment match was achieved
         if match_flag > 0:
-            logging.warning("Final T [s]:  " , (final_time) )
-            logging.warning("Final DTW (y): %2.5f"% (final_dtw) )
+            logging.warning("Final T [s]: %s" % (final_time) )
+            logging.warning("Final DTW (y): %2.5f" % (final_dtw) )
 
             return GeopardResponse(final_time, final_dtw, final_start_point, final_end_point, match_flag)
 
@@ -275,7 +280,7 @@ class Geopard:
             for i in range( len(points) ):
 
                 ### check if track points are within region polygon
-                if region.contains( points[i] ) == True:
+                if region.contains( points[i] ):
                     idx.append( int(i) )
 
             logging.warning('{} NN within region polygon: {}'.format( len(idx), region) )
@@ -291,7 +296,12 @@ class Geopard:
 
             logging.warning('{} NN within radius of {}m near centroid: {}'.format( len(idx), radius, centroid[:2]) )
 
-        ### check if nearby points were found
+        ### filter out consecutive candidates
+        nums = sorted(set(idx))
+        gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s+1 < e]
+        edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+        idx = list(edges)
+
         if not idx:
             raise GeopardException('No trackpoints found near centroid')
 
@@ -375,9 +385,6 @@ class Geopard:
 
         ### compute dynamic time warping
         dtw = self.acm( gpx_data_interpolated, gold )[-1,-1]
-
-        logging.warning("DTW (y): %2.5f"% (dtw) )
-        logging.warning("T [s]:  %s", (delta_time) )
 
         return dtw, delta_time
 
