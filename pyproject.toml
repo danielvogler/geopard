@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "geopard"
+version = "0.1.22"
+description = "Matching of gpx segments with dynamic time warping."
+authors = ["danielvogler", "Sebastian de Castelberg"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "geopard" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+gpxpy = "^1.5.0"
+scipy = "^1.5.4"
+Shapely = "^1.7.1"
+numpy = "^1.11"
+matplotlib = "^3.6.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
