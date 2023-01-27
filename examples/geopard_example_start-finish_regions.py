@@ -1,30 +1,27 @@
-"""
-Daniel Vogler
-geopard example
-"""
+"""Geopard example."""
+import logging
+
+from matplotlib import pyplot as plt
 
 from geopard.geopard import Geopard
-from matplotlib import pyplot as plt
+from geopard.settings import PROJECT_ROOT
 
 ### initialize
 gp = Geopard()
 
-folder_path = "../gpx_files/"
+folder_path = PROJECT_ROOT + "/gpx_files/"
 
-"""
-Example activities
-"""
+logging.info("Example activities")
 
 ### example - one-way skimo
 ### dtw=0.09702, radius=7m, t=0:25:22
 gold_name = "tds_sunnestube_segment.gpx"
-activity_name = "tds_sunnestube_activity_25_25.gpx"          # 0:25:22
+activity_name = "tds_sunnestube_activity_25_25.gpx"  # 0:25:22
 start_region = gp.create_polygon("../utils/example_start_region.csv")
 finish_region = gp.create_polygon("../utils/example_finish_region.csv")
 
-""" 
-plotting data
-"""
+logging.info("Plotting data.")
+
 radius = 7
 
 ### start and end area polygons
@@ -43,16 +40,16 @@ gpx_cropped = gp.gpx_track_crop(gold, trkps, start_region=start_region, finish_r
 nn_start, nn_start_idx = gp.nearest_neighbours(gpx_cropped, region=start_region)
 nn_finish, nn_finish_idx = gp.nearest_neighbours(gpx_cropped, region=finish_region)
 
-"""
-Track matching
-"""
+logging.info("Track matching")
 
 ### dtw matching of example segments/activities
-geopard_response = gp.dtw_match(folder_path+gold_name, folder_path+activity_name, start_region=start_region, finish_region=finish_region)
+geopard_response = gp.dtw_match(
+    folder_path + gold_name, folder_path + activity_name, start_region=start_region, finish_region=finish_region
+)
 
 if not geopard_response.is_success():
-    print("\n----- Matching not successful -----")
-    print("Error:" , geopard_response.error)
+    logging.warning("\n----- Matching not successful -----")
+    logging.warning("Error:", geopard_response.error)
     exit(-1)
 
 final_time = geopard_response.time
@@ -61,19 +58,18 @@ match_flag = geopard_response.match_flag
 final_start_point = geopard_response.start_point
 final_end_point = geopard_response.end_point
 
-"""
-Track plotting
-"""
+logging.info("Track plotting")
+
 ### plot gpx tracks
-fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor='w', edgecolor='k')
+fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor="w", edgecolor="k")
 ### plot start/finish polygons
-plt.plot(*start_region_polygon.exterior.xy,c='b',label='Start region',linewidth=5)
-plt.plot(*finish_region_polygon.exterior.xy,c='b',label='Finish region',linewidth=5,linestyle='dotted')
-gp.gpx_plot(fig,nn_start,["NN Start Cropped","X","b"],1200)
-gp.gpx_plot(fig,nn_finish,["NN Finish Cropped","P","b"],1200)
-gp.gpx_plot(fig,trkps,["Activity",".","k"])
-gp.gpx_plot(fig,gpx_cropped,["Activity Cropped","o","k"])
-gp.gpx_plot(fig,gold,["Gold","o","r"])
+plt.plot(*start_region_polygon.exterior.xy, c="b", label="Start region", linewidth=5)
+plt.plot(*finish_region_polygon.exterior.xy, c="b", label="Finish region", linewidth=5, linestyle="dotted")
+gp.gpx_plot(fig, nn_start, ["NN Start Cropped", "X", "b"], 1200)
+gp.gpx_plot(fig, nn_finish, ["NN Finish Cropped", "P", "b"], 1200)
+gp.gpx_plot(fig, trkps, ["Activity", ".", "k"])
+gp.gpx_plot(fig, gpx_cropped, ["Activity Cropped", "o", "k"])
+gp.gpx_plot(fig, gold, ["Gold", "o", "r"])
 
 plt.show()
 exit()

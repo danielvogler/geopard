@@ -1,12 +1,20 @@
+"""Provide unit test cases."""
+import logging
 import unittest
 
 from geopard.geopard import Geopard
+from geopard.settings import PROJECT_ROOT
+
+logging.basicConfig(encoding="utf-8", level=logging.INFO)
+
 
 class TestGeopard(unittest.TestCase):
+    """Test example for geopard."""
 
     def test_green_marathon(self):
-        gold_name = "gpx_files/green_marathon_segment.gpx"
-        activity_name = "gpx_files/green_marathon_activity_4_15_17.gpx"
+        """Green marathon test segment."""
+        gold_name = PROJECT_ROOT + "/gpx_files/green_marathon_segment.gpx"
+        activity_name = PROJECT_ROOT + "/gpx_files/green_marathon_activity_4_15_17.gpx"
 
         gp = Geopard()
         res = gp.dtw_match(gold_name, activity_name, radius=20)
@@ -20,8 +28,9 @@ class TestGeopard(unittest.TestCase):
         self.assertEqual(res.end_point[1], 8.535789)
 
     def test_sunnestube(self):
-        gold_name = "gpx_files/tds_sunnestube_segment.gpx"
-        activity_name = "gpx_files/tds_sunnestube_activity_25_25.gpx"
+        """Sunnestube test segment."""
+        gold_name = PROJECT_ROOT + "/gpx_files/tds_sunnestube_segment.gpx"
+        activity_name = PROJECT_ROOT + "/gpx_files/tds_sunnestube_activity_25_25.gpx"
 
         gp = Geopard()
         res = gp.dtw_match(gold_name, activity_name, radius=7)
@@ -34,5 +43,6 @@ class TestGeopard(unittest.TestCase):
         self.assertEqual(res.end_point[0], 47.164231)
         self.assertEqual(res.end_point[1], 9.176556)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
