@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geopard"
-version = "0.1.25"
+version = "0.1.26"
 description = "Matching of gpx segments with dynamic time warping."
 authors = ["danielvogler", "Sebastian de Castelberg"]
 license = "MIT"
@@ -17,6 +17,7 @@ Shapely = "^1.7.1"
 numpy = "^1.11"
 matplotlib = "^3.6.3"
 pytest = "^7.4.3"
+yamllint = "^1.32.0"
 
 
 [build-system]

@@ -1,11 +1,25 @@
-name: Python package testing
+---
+name: CI
 
-on:
+on:  # yamllint disable-line rule:truthy
   pull_request:
   push:
 
 jobs:
-  ci:
+  pre-commit:
+    name: >-
+      pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.0
+
+  pytest:
+    name: >-
+      Run pytest
+    needs:
+      - pre-commit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,7 +34,7 @@ jobs:
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
       - uses: actions/cache@v3
-        name: Define a cache for the virtual environment based on the dependencies lock file
+        name: Define cache for venv based on the dependencies lock file
         with:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
