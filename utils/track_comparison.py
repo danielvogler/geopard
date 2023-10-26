@@ -1,15 +1,17 @@
-"""
-Daniel Vogler
-track_comparison
+"""Compare two tracks.
+
+track_comparison.py
 
 run as:
 python track_comparison.py gold_file.gpx activity_file.gpx
 
 """
+import logging
+import sys
+
+from matplotlib import pyplot as plt
 
 from geopard.geopard import Geopard
-from matplotlib import pyplot as plt
-import sys
 
 ### initialize
 gp = Geopard()
@@ -20,9 +22,7 @@ activity_name = sys.argv[2]
 ### radius (m) around start/end trackpoints
 radius = 20
 
-"""
-Track plotting
-"""
+logging.info("Track plotting")
 
 ### load gold standard/baseline segment
 gold = gp.gpx_loading(gold_name)
@@ -35,15 +35,15 @@ trkps = gp.gpx_loading(activity_name)
 gpx_cropped = gp.gpx_track_crop(gold, trkps, radius)
 
 ### plot gpx tracks
-fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor='w', edgecolor='k')
-gp.gpx_plot(fig,trkps,["Activity",".","k"])
-gp.gpx_plot(fig,gold,["Gold",".","r"])
+fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor="w", edgecolor="k")
+gp.gpx_plot(fig, trkps, ["Activity", ".", "k"])
+gp.gpx_plot(fig, gold, ["Gold", ".", "r"])
 
 ### plot interpolated gpx tracks
-fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor='w', edgecolor='k')
+fig = plt.figure(num=None, figsize=(200, 150), dpi=80, facecolor="w", edgecolor="k")
 gpx_interpolated = gp.interpolate(gpx_cropped)
-gp.gpx_plot(fig,gpx_interpolated.T,["Activity Interpolated",".","k"])
-gp.gpx_plot(fig,gold_interpolated.T,["Gold Interpolated",".","r"])
+gp.gpx_plot(fig, gpx_interpolated.T, ["Activity Interpolated", ".", "k"])
+gp.gpx_plot(fig, gold_interpolated.T, ["Gold Interpolated", ".", "r"])
 
 plt.show()
 exit()

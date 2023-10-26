@@ -1,1 +1,2 @@
-__version__ = "0.1.21"
+"""Package versioning."""
+__version__ = "0.1.22"
