@@ -1,19 +1,25 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
   - repo: https://github.com/PyCQA/autoflake
-    rev: 4d46ef7c40ff02c63a18d171e1142ebd623f8c39
+    rev: v2.2.1
     hooks:
       - id: autoflake
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: a6fe4222012e990042c86cdaaa904a8d059752ee
+    rev: 6.3.0
     hooks:
       - id: pydocstyle
   - repo: https://github.com/psf/black
-    rev: ae2c0758c9e61a385df9700dc9c231bf54887041
+    rev: 23.10.1
     hooks:
       - id: black
         args: [--line-length=119]
   - repo: https://github.com/timothycrosley/isort
-    rev: c5e8fa75dda5f764d20f66a215d71c21cfa198e1
+    rev: 5.12.0
     hooks:
       - id: isort
         args: ["--profile", "black"]
