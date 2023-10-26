@@ -71,6 +71,21 @@ Alternatively, install python dependencies with pip:
   pre-commit run -a
   ```
 
+### Code testing
+Testing is done with [pytest](https://docs.pytest.org/). The pytest package is already installed in the poetry venv.
+- Run all tests:
+
+  ```bash
+  pytest
+  ```
+
+- Run individual tests:
+
+  ```bash
+  pytest <path-to-test-files>
+  ```
+
+
 
 ## Usage
 
