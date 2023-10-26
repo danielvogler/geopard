@@ -1,0 +1,44 @@
+---
+name: CI
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+
+jobs:
+  pre-commit:
+    name: >-
+      pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.0
+
+  pytest:
+    name: >-
+      Run pytest
+    needs:
+      - pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v4
+        # see details (matrix, python-version, python-version-file, etc.)
+        # https://github.com/actions/setup-python
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Setup a local virtual environment (if no poetry.toml file)
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define cache for venv based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+      - name: Install the project dependencies
+        run: poetry install
+      - name: Run the automated tests (for example)
+        run: poetry run pytest -v
