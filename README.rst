@@ -3,7 +3,7 @@ geopard
 
 Matching of gpx segments with dynamic time warping.
 
-Pre-processing and analysis of gpx tracks (activities) for comparison to an existing gpx track (gold standard, segment). Checked are the joint start and end points with a given tolerance to trim the activity. Both tracks are interpolated to allow for both curves to be compared with dynamic time warping. Dynamic time warping allows to assess whether the activity actually completed the gold standard segment, and what the shortest required time was (in case of multiple repetitions or many points of the activity within the allowed distance of start and end points). 
+Pre-processing and analysis of gpx tracks (activities) for comparison to an existing gpx track (gold standard, segment). Checked are the joint start and end points with a given tolerance to trim the activity. Both tracks are interpolated to allow for both curves to be compared with dynamic time warping. Dynamic time warping allows to assess whether the activity actually completed the gold standard segment, and what the shortest required time was (in case of multiple repetitions or many points of the activity within the allowed distance of start and end points).
 
 Usage
 =====
@@ -15,7 +15,7 @@ Usage
 .. code:: python
 
   import geopard
-   
+
   ### initialize
   gp = geopard.Geopard()
 
@@ -87,8 +87,8 @@ Usage
   # is_success and error
   response.is_success
   response.error
-  
-  
+
+
 Dependencies
 ============
 
@@ -97,8 +97,8 @@ Install python dependencies with pip:
 ::
 
    pip install -r requirements.txt
-   
-   
+
+
 Images
 ======
 
@@ -109,4 +109,3 @@ Example of gold segment, total activity and activity cropped to gold segment len
 .. figure:: https://raw.githubusercontent.com/danielvogler/geopard/master/images/example_track_start-finish.png
   :alt: Example of start and end points to crop gpx tracks and obtain pairs for dtw matching.
 Example of start and end points to crop gpx tracks and obtain pairs for dtw matching.
-
