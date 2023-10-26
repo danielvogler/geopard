@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geopard"
-version = "0.2.0"
+version = "0.2.1"
 description = "Matching of gpx segments with dynamic time warping."
 authors = ["danielvogler", "Sebastian de Castelberg"]
 license = "MIT"
