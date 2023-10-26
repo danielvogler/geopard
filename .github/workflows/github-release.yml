@@ -1,12 +1,13 @@
 ---
 name: Create Github Release
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
+jobs:
   github-release:
     name: Create Github Release
     runs-on: ubuntu-latest
