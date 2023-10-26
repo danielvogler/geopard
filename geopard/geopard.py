@@ -144,13 +144,10 @@ class Geopard:
 
         ### possible start point combinations
         for i in nn_start_idx:
-
             ### possible end point combinations
             for j in nn_finish_idx:
-
                 ### start needs to happen before finish and include min_trkps in between
                 if i < j - min_trkps:
-
                     combinations_to_test += 1
 
                     ### segment_time
@@ -175,7 +172,6 @@ class Geopard:
         ### return if shortest activity satisfies dtw requirement
         ### exit if all combinations are tested
         while final_dtw > dtw_threshold and combinations_to_test > s + 1:
-
             ### counter
             s += 1
 
@@ -199,7 +195,6 @@ class Geopard:
             ### only save dtw value and time for shortest (first) match in grey zone
             ### shortest grey zone match is overwritten if hard dtw threshold is crossed
             elif dtw_threshold < dtw <= dtw_threshold_soft and match_flag < 0:
-
                 ### update final time and dtw
                 final_time = delta_time
                 final_dtw = dtw
@@ -338,14 +333,12 @@ class Geopard:
 
         ### polygon region is given to find NN
         if region is not None:
-
             ### Convert track coordinates to points
             points = [Point(reversed(i)) for i in gpx_data[:4, :][:2].T]
 
             idx = []
             ### go through all gpx track points
             for i in range(len(points)):
-
                 ### check if track points are within region polygon
                 if region.contains(points[i]):
                     idx.append(int(i))
@@ -354,7 +347,6 @@ class Geopard:
 
         ### no polygon region given - default to circle around start
         else:
-
             ### distance (m) of all points to centroid
             distance = [self.spheroid_point_distance(i, centroid[:2]) for i in gpx_data[:4, :][:2].T]
 
