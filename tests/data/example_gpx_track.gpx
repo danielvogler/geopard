@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="dv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <trk>
+  <name>Test GPX track</name>
+  <desc>Test</desc>
+  <type>Run</type>
+  <trkseg>
+   <trkpt lat="47.11" lon="9.11">
+    <ele>1300.0</ele>
+   </trkpt>
+   <trkpt lat="47.12" lon="9.12">
+    <ele>1400.0</ele>
+   </trkpt>
+   <trkpt lat="47.13" lon="9.13">
+    <ele>1500.0</ele>
+   </trkpt>
+  </trkseg>
+ </trk>
+</gpx>

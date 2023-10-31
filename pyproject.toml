@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geopard"
-version = "0.2.1"
+version = "0.2.2"
 description = "Matching of gpx segments with dynamic time warping."
 authors = ["danielvogler", "Sebastian de Castelberg"]
 license = "MIT"
@@ -18,7 +18,24 @@ numpy = "^1.11"
 matplotlib = "^3.6.3"
 pytest = "^7.4.3"
 yamllint = "^1.32.0"
+pylint = "^3.0.2"
 
+[tool.black]
+target-version = ["py39"]
+line-length = 79
+
+[tool.flake8]
+max-line-length = 79
+exclude = [".git", "__pycache__", "dist"]
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 79
+skip_gitignore = true
+
+[tool.pylint]
+max-line-length = 79
 
 [build-system]
 requires = ["poetry-core"]

@@ -6,6 +6,7 @@ Matching of gpx segments with dynamic time warping.
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pre-commit/action/main.svg)](https://results.pre-commit.ci/latest/github/pre-commit/action/main)
 [![linter](https://img.shields.io/badge/code%20linting-pylint-blue.svg)](https://github.com/PyCQA/pylint)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![pydocstyle](https://img.shields.io/badge/pydocstyle-enabled-AD4CD3)](http://www.pydocstyle.org/en/stable/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -90,27 +91,27 @@ Testing is done with [pytest](https://docs.pytest.org/). The pytest package is a
 ## Usage
 
 - Example GPX tracks are available at [https://github.com/danielvogler/geopard_tests](https://github.com/danielvogler/geopard_tests)
-- Example files for construction of start/finish region in `./utils/`
-- Example usage demonstrated in `./geopard_example`
+- Example files for construction of start/finish region in `<PROJECT_ROOT>/data/csv_polygon_files/`
+- Example usage demonstrated in `<PROJECT_ROOT>/geopard_example`
 
 ### Example usage with circular start region around gold start/end points:
 
 ```
 import geopard
 
-### initialize
+# initialize
 gp = geopard.Geopard()
 
-### dtw matching of example segments/activities
+# dtw matching of example segments/activities
 response = gp.dtw_match(gold_name, activity_name)
 
-### optional with:
-### min_trkps - minimum number of trackpoints between start and finish
-### radius - radius around start and finish of gold segment
-### dtw_threshold - segment match quality
+# optional with:
+# min_trkps - minimum number of trackpoints between start and finish
+# radius - radius around start and finish of gold segment
+# dtw_threshold - segment match quality
 response = gp.dtw_match(gold_name, activity_name, min_trkps = 100, radius=15, dtw_threshold=0.3)
 
-### GeopardResponse
+# GeopardResponse
 
 # final time
 response.time
@@ -138,44 +139,26 @@ response.error
 ```
 import geopard
 
-### initialize
+# initialize
 gp = geopard.Geopard()
 
-start_region = gp.create_polygon("./utils/example_start_region.csv")
-finish_region = gp.create_polygon("./utils/example_finish_region.csv")
+start_region = gp.create_polygon("<PROJECT_ROOT>/data/csv_polygon_files/example_start_region.csv")
+finish_region = gp.create_polygon("<PROJECT_ROOT>/data/csv_polygon_files/example_finish_region.csv")
 
-gold_name = './gpx_files/tds_sunnestube_segment.gpx'
-activity_name = './gpx_files/tds_sunnestube_activity_25_25.gpx'
+gold_name = './data/gpx_files/tds_sunnestube_segment.gpx'
+activity_name = './data/gpx_files/tds_sunnestube_activity_25_25.gpx'
 
-response = gp.dtw_match(gold_name, activity_name, start_region=start_region, finish_region=finish_region)
+geopard_response = gp.dtw_match(gold_name, activity_name, start_region=start_region, finish_region=finish_region)
 
-### GeopardResponse
-
-# final time
-response.time
-
-# final dtw
-response.dtw
-
-# final start point
-response.start_point
-
-# final end point
-response.end_point
-
-# match flag
-response.match_flag
-
-# is_success and error
-response.is_success
-response.error
+# GeopardResponse
+gp.parse_response(geopard_response)
 ```
 
 ## Examples
 
-![Example image](/images/example_track.png "Example of gpx crop")
+![Example image](/docs/images/example_track.png "Example of gpx crop")
 Example of gold segment, total activity and activity cropped to gold segment length.
 
 
-![Example image](/images/example_track_start-finish.png "Example start and end points")
+![Example image](/docs/images/example_track_start-finish.png "Example start and end points")
 Example of start and end points to crop gpx tracks and obtain pairs for dtw matching.

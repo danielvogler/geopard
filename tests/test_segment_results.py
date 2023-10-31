@@ -13,8 +13,11 @@ class TestGeopard(unittest.TestCase):
 
     def test_green_marathon(self):
         """Green marathon test segment."""
-        gold_name = PROJECT_ROOT + "/gpx_files/green_marathon_segment.gpx"
-        activity_name = PROJECT_ROOT + "/gpx_files/green_marathon_activity_4_15_17.gpx"
+        gold_name = PROJECT_ROOT + "/data/gpx_files/green_marathon_segment.gpx"
+        activity_name = (
+            PROJECT_ROOT
+            + "/data/gpx_files/green_marathon_activity_4_15_17.gpx"
+        )
 
         gp = Geopard()
         res = gp.dtw_match(gold_name, activity_name, radius=20)
@@ -29,8 +32,10 @@ class TestGeopard(unittest.TestCase):
 
     def test_sunnestube(self):
         """Sunnestube test segment."""
-        gold_name = PROJECT_ROOT + "/gpx_files/tds_sunnestube_segment.gpx"
-        activity_name = PROJECT_ROOT + "/gpx_files/tds_sunnestube_activity_25_25.gpx"
+        gold_name = PROJECT_ROOT + "/data/gpx_files/tds_sunnestube_segment.gpx"
+        activity_name = (
+            PROJECT_ROOT + "/data/gpx_files/tds_sunnestube_activity_25_25.gpx"
+        )
 
         gp = Geopard()
         res = gp.dtw_match(gold_name, activity_name, radius=7)
