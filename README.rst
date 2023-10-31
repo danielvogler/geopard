@@ -8,8 +8,8 @@ Pre-processing and analysis of gpx tracks (activities) for comparison to an exis
 Usage
 =====
 - Example GPX tracks are available at [https://github.com/danielvogler/geopard_tests](https://github.com/danielvogler/geopard_tests)
-- Example files for construction of start/finish region in `./utils/`
-- Example usage demonstrated in `./geopard_example`
+- Example files for construction of start/finish region in `<PROJECT_ROOT>/data/csv_polygon_files/`
+- Example usage demonstrated in `<PROJECT_ROOT>/geopard_example`
 - Example usage with circular start region around gold start/end points:
 
 .. code:: python
@@ -56,11 +56,11 @@ Usage
 
   import geopard
 
-  start_region = "./utils/example_start_region.csv"
-  finish_region = "./utils/example_finish_region.csv"
+  start_region = "<PROJECT_ROOT>/data/csv_polygon_files/example_start_region.csv"
+  finish_region = "<PROJECT_ROOT>/data/csv_polygon_files/example_finish_region.csv"
 
-  gold_name = './gpx_files/tds_sunnestube_segment.gpx'
-  activity_name = './gpx_files/tds_sunnestube_activity_25_25.gpx'
+  gold_name = '<PROJECT_ROOT>/data/gpx_files/tds_sunnestube_segment.gpx'
+  activity_name = '<PROJECT_ROOT>/data/gpx_files/tds_sunnestube_activity_25_25.gpx'
 
   ### initialize
   gp = geopard.Geopard()
@@ -102,10 +102,10 @@ Install python dependencies with pip:
 Images
 ======
 
-.. figure:: https://raw.githubusercontent.com/danielvogler/geopard/master/images/example_track.png
+.. figure:: https://raw.githubusercontent.com/danielvogler/geopard/master/docs/images/example_track.png
   :alt: Example of gold segment, total activity and activity cropped to gold segment length.
 Example of gold segment, total activity and activity cropped to gold segment length.
 
-.. figure:: https://raw.githubusercontent.com/danielvogler/geopard/master/images/example_track_start-finish.png
+.. figure:: https://raw.githubusercontent.com/danielvogler/geopard/master/docs/images/example_track_start-finish.png
   :alt: Example of start and end points to crop gpx tracks and obtain pairs for dtw matching.
 Example of start and end points to crop gpx tracks and obtain pairs for dtw matching.

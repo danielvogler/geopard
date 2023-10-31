@@ -42,6 +42,7 @@ install:
 	pre-commit install
 
 test:
+	pre-commit run -a
 	${PYTHON} -m pytest
 
 clean:
