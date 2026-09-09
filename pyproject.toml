@@ -109,7 +109,11 @@ convention = "google"
 
 [tool.mypy]
 files = ["src", "tests"]
-python_version = "3.11"
+# `python_version` is deliberately not pinned. Pinning it to 3.11 makes mypy
+# reject its own dependencies' stubs when it runs on a newer interpreter --
+# numpy's __init__.pyi uses PEP 695 `type` statements, legal on 3.12+, which a
+# 3.11 target refuses. Left unset, mypy targets whichever interpreter it runs
+# under, so `make check` works on every version the project supports.
 # gpxpy, scipy and matplotlib ship partial or no type information. Everything
 # this repository writes itself is still checked.
 ignore_missing_imports = true
