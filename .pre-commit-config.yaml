@@ -1,46 +1,66 @@
 ---
+# Install with: uv run pre-commit install --install-hooks
+# Run over everything with: make hooks
+default_install_hook_types: [pre-commit, commit-msg]
+default_language_version:
+  python: python3.11
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+      - id: check-added-large-files
+        args: [--maxkb=512]
+        # uv.lock is generated text we deliberately commit, and it is
+        # legitimately over the limit. Excluding it by name keeps the guard
+        # tight for everything else rather than raising it globally.
+        exclude: ^uv\.lock$
+      - id: check-merge-conflict
+      - id: check-toml
       - id: check-yaml
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.1
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.6
     hooks:
-      - id: autoflake
-  - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.3.0
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.28
     hooks:
-      - id: pydocstyle
-  - repo: https://github.com/psf/black
-    rev: 23.10.1
-    hooks:
-      - id: black
-        args: [--line-length=79]
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.32.0
-    hooks:
-      - id: yamllint
-  - repo: https://github.com/PyCQA/flake8.git
-    rev: 6.1.0
-    hooks:
-      - id: flake8
-        args: ["--ignore=E203,F811,W503"]
+      # Keeps uv.lock honest whenever pyproject.toml moves.
+      - id: uv-lock
+
   - repo: local
     hooks:
-      - id: pylint
-        name: pylint
-        entry: poetry run pylint
+      # The upstream mypy mirror runs in its own isolated environment and
+      # cannot see project dependencies, which produces phantom import errors.
+      # Run the project's own mypy instead.
+      - id: mypy
+        name: mypy
+        entry: uv run --frozen mypy
         language: system
         types: [python]
-        args:
-          [
-            "-rn", # Only display messages
-          ]
+        pass_filenames: false
+        require_serial: true
+
+      - id: no-agent-coauthors
+        name: no AI Co-Authored-By trailers
+        language: pygrep
+        stages: [commit-msg]
+        args: [--ignore-case, --multiline]
+        entry: 'co-authored-by:.*(claude|anthropic|copilot|cursor|gemini|codex|chatgpt|openai)'
+
+      # Absolute paths under a home directory break for everyone else the
+      # moment they are shared, and in a committed file they survive forever.
+      - id: no-absolute-home-paths
+        name: no absolute home paths
+        language: pygrep
+        types_or: [python, markdown, yaml, toml]
+        entry: '(/Users/|/home/)[a-z][a-z0-9_-]*/'
