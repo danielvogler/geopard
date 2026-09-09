@@ -1,75 +1,48 @@
 ---
-name: Publish Python distr. package to PyPI and TestPyPI and create Release
+name: Publish to PyPI
 
 on:  # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build distribution package
+    name: Build distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-      - name: Install pypa/build
-        run: >-
-          python3 -m
-          pip install
-          build
-          --user
-      - name: Build a binary wheel and a source tarball
-        run: python3 -m build
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build
+        run: uv build
+
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
 
   publish-to-pypi:
-    name: >-
-      Publish Python distribution package to PyPI
-    needs:
-      - build
+    name: Publish to PyPI
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/geopard
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      id-token: write  # mandatory for trusted publishing
     steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@v3
+      - name: Download the dists
+        uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
-      - name: Publish distribution package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
 
-  publish-to-testpypi:
-    name: Publish Python distribution package to TestPyPI
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/geopard
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
-    steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@v3
-        with:
-          name: python-package-distributions
-          path: dist/
-      - name: Publish distribution package to TestPyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/

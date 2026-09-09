@@ -1,127 +1,91 @@
-"""Geopard example input file.
+"""Match an activity against a gold-standard segment, and plot the result.
 
-Example usage:
+Run with the shipped example tracks::
 
-python ./examples/track_matching.py
-    --GOLD_FILE_NAME=./data/gpx_files/tds_sunnestube_segment.gpx
-    --ACTIVITY_FILE_NAME=./data/gpx_files/tds_sunnestube_segment_25_25.gpx
-    --RADIUS=7
+    uv run python examples/track_matching.py
+
+Or against your own::
+
+    uv run python examples/track_matching.py \
+        --gold my_segment.gpx --activity my_activity.gpx --radius 10
 """
+
+from __future__ import annotations
+
 import argparse
 import logging
 import sys
 
-import matplotlib.pyplot as plt
+from geopard import Geopard
+from geopard.plotting import plot_regions
+from geopard.settings import GPX_DATA_DIR
 
-from geopard.geopard import Geopard
-from geopard.settings import PROJECT_ROOT
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-logging.basicConfig(encoding="utf-8", level=logging.INFO)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--GOLD_FILE_NAME", type=str, required=False)
-parser.add_argument("--ACTIVITY_FILE_NAME", type=str, required=False)
-parser.add_argument("--RADIUS", type=str, required=False)
-parser.add_argument("--START_REGION_FILE_NAME", type=str, required=False)
-parser.add_argument("--FINISH_REGION_FILE_NAME", type=str, required=False)
-args, unknown = parser.parse_known_args()
+def parse_args() -> argparse.Namespace:
+    """Read the command line."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--gold",
+        default=str(GPX_DATA_DIR / "tds_sunnestube_segment.gpx"),
+        help="GPX track other activities are compared against.",
+    )
+    parser.add_argument(
+        "--activity",
+        default=str(GPX_DATA_DIR / "tds_sunnestube_activity_25_25.gpx"),
+        help="GPX track to evaluate.",
+    )
+    parser.add_argument(
+        "--radius",
+        type=float,
+        default=7.0,
+        help="Metres around the gold start/finish. Default: %(default)s",
+    )
+    parser.add_argument("--start-region", help="CSV polygon to use instead of a radius.")
+    parser.add_argument("--finish-region", help="CSV polygon to use instead of a radius.")
+    parser.add_argument("--no-plot", action="store_true", help="Skip the figures.")
 
-# initialize
-gp = Geopard()
+    return parser.parse_args()
 
-# gold file, GPX track against which other tracks are compared
-if args.GOLD_FILE_NAME:
-    GOLD_FILE_NAME = args.GOLD_FILE_NAME
-else:
-    GOLD_FILE_NAME = (
-        PROJECT_ROOT + "/data/gpx_files/tds_sunnestube_segment.gpx"
+
+def main() -> int:
+    """Match, report, and plot."""
+    args = parse_args()
+    gp = Geopard()
+
+    start_region = gp.create_polygon(args.start_region) if args.start_region else None
+    finish_region = gp.create_polygon(args.finish_region) if args.finish_region else None
+
+    logging.info("Matching %s against %s", args.activity, args.gold)
+    response = gp.dtw_match(
+        gold_name=args.gold,
+        activity_name=args.activity,
+        radius=args.radius,
+        start_region=start_region,
+        finish_region=finish_region,
     )
 
-# activity to evaluate
-if args.ACTIVITY_FILE_NAME:
-    ACTIVITY_FILE_NAME = args.ACTIVITY_FILE_NAME
-else:
-    ACTIVITY_FILE_NAME = (
-        PROJECT_ROOT + "/data/gpx_files/tds_sunnestube_activity_25_25.gpx"
+    if not response.is_success():
+        logging.error("No match. Flag %s: %s", response.match_flag, response.error)
+        return 1
+
+    gp.parse_response(response)
+
+    if args.no_plot:
+        return 0
+
+    gp.plot_track_comparison(
+        gold_file_name=args.gold,
+        activity_file_name=args.activity,
+        radius=args.radius,
     )
 
-# RADIUS (m) around start/end trackpoints
-if args.RADIUS:
-    RADIUS = args.RADIUS
-else:
-    RADIUS = 7
+    if start_region or finish_region:
+        plot_regions(gp.gpx_loading(args.activity), start_region, finish_region)
 
-# start area geometry
-# example:
-# START_REGION_FILE_NAME = (
-#        PROJECT_ROOT + "/data/csv_polygon_files/example_start_region.csv"
-#    )
-if args.START_REGION_FILE_NAME:
-    START_REGION_FILE_NAME = args.START_REGION_FILE_NAME
-else:
-    START_REGION_FILE_NAME = None
-
-# end area geometry:
-# example:
-# FINISH_REGION_FILE_NAME = (
-#        PROJECT_ROOT + "/data/csv_polygon_files/example_finish_region.csv"
-#    )
-if args.FINISH_REGION_FILE_NAME:
-    FINISH_REGION_FILE_NAME = args.FINISH_REGION_FILE_NAME
-else:
-    FINISH_REGION_FILE_NAME = None
-
-logging.info("Track matching of example segments/activities")
-geopard_response = gp.dtw_match(
-    gold_name=GOLD_FILE_NAME, activity_name=ACTIVITY_FILE_NAME, radius=RADIUS
-)
-
-logging.info("Evaluate Geopard reponse")
-if not geopard_response.is_success():
-    logging.debug("\n----- Matching not successful -----")
-    logging.debug("Error: %s", geopard_response.error)
-    sys.exit(-1)
-
-gp.parse_response(geopard_response)
-
-logging.info("Plotting evaluated GPX tracks")
-gp.plot_track_comparison(
-    gold_file_name=GOLD_FILE_NAME,
-    activity_file_name=ACTIVITY_FILE_NAME,
-    radius=7,
-)
+    return 0
 
 
-if START_REGION_FILE_NAME or FINISH_REGION_FILE_NAME:
-    logging.info("Plotting polygons")
-    fig = plt.figure(
-        num=None, figsize=(14, 10), dpi=80, facecolor="w", edgecolor="k"
-    )
-    FONT_SIZE = 30
-    LW = 5
-    plt.rcParams.update({"font.size": FONT_SIZE})
-
-    if START_REGION_FILE_NAME:
-        start_region_polygon = gp.create_polygon(
-            file_name=START_REGION_FILE_NAME
-        )
-        plt.plot(
-            *start_region_polygon.exterior.xy,
-            c="k",
-            label="Start",
-            linewidth=LW,
-        )
-
-    if FINISH_REGION_FILE_NAME:
-        finish_region_polygon = gp.create_polygon(
-            file_name=FINISH_REGION_FILE_NAME
-        )
-        plt.plot(
-            *finish_region_polygon.exterior.xy,
-            c="b",
-            label="Finish",
-            linewidth=LW,
-        )
-    activity_gpx_track = gp.gpx_loading(ACTIVITY_FILE_NAME)
-    gp.gpx_plot(fig, activity_gpx_track, ["Track", "o", "r"])
-    plt.show()
+if __name__ == "__main__":
+    sys.exit(main())

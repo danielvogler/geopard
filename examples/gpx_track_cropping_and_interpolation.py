@@ -1,76 +1,54 @@
-"""Compare two tracks.
+"""Show what cropping and interpolation do to a track, before any matching.
 
-track_comparison.py
-
-run as:
-python track_comparison.py --gold_file_name=gold_file.gpx
-    --activity_file_name=activity_file.gpx
-
+uv run python examples/gpx_track_cropping_and_interpolation.py
 """
+
+from __future__ import annotations
+
 import argparse
 import logging
+import sys
 
-from matplotlib import pyplot as plt
+from geopard import Geopard
+from geopard.settings import GPX_DATA_DIR
 
-from geopard.geopard import Geopard
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-# initialize
-gp = Geopard()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--gold_file_name", type=str, required=False)
-parser.add_argument("--activity_file_name", type=str, required=False)
-parser.add_argument("--radius", type=str, required=False)
-args, unknown = parser.parse_known_args()
+def parse_args() -> argparse.Namespace:
+    """Read the command line."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--gold", default=str(GPX_DATA_DIR / "tds_sunnestube_segment.gpx"))
+    parser.add_argument("--activity", default=str(GPX_DATA_DIR / "tds_sunnestube_activity_25_25.gpx"))
+    parser.add_argument("--radius", type=float, default=20.0)
+    parser.add_argument("--save-to", help="Path prefix for PNG output, e.g. docs/images/example")
 
-if args.gold_file_name:
-    GOLD_FILE_NAME = args.gold_file_name
-else:
-    GOLD_FILE_NAME = "tds_sunnestube_segment.gpx"
+    return parser.parse_args()
 
-if args.activity_file_name:
-    ACTIVITY_FILE_NAME = args.activity_file_name
-else:
-    ACTIVITY_FILE_NAME = "tds_sunnestube_activity_25_25.gpx"
 
-# radius (m) around start/end trackpoints
-if args.radius:
-    RADIUS = args.radius
-else:
-    RADIUS = 20
+def main() -> int:
+    """Draw the crop and the interpolated curves."""
+    args = parse_args()
+    gp = Geopard()
 
-# GOLD STANDARD
-# load gold standard/baseline segment
-gold_gpx_track = gp.gpx_loading(GOLD_FILE_NAME)
-# interpolate gold data
-gold_gpx_track_interpolated = gp.interpolate(gold_gpx_track)
+    gold = gp.gpx_loading(args.gold)
+    activity = gp.gpx_loading(args.activity)
+    cropped = gp.gpx_track_crop(gold=gold, gpx_data=activity, radius=args.radius)
 
-# ACTIVITY
-# load activity data to be edited
-activity_gpx_track = gp.gpx_loading(ACTIVITY_FILE_NAME)
-# crop activity data to segment length
-activity_gpx_track_cropped = gp.gpx_track_crop(
-    gold=gold_gpx_track, gpx_data=activity_gpx_track, radius=RADIUS
-)
+    logging.info("Gold segment:      %s trackpoints", gold.shape[1])
+    logging.info("Activity:          %s trackpoints", activity.shape[1])
+    logging.info("Activity, cropped: %s trackpoints", cropped.shape[1])
 
-logging.info("Track plotting")
+    gp.plot_track_comparison(
+        gold_file_name=args.gold,
+        activity_file_name=args.activity,
+        radius=args.radius,
+        show=args.save_to is None,
+        save_to=args.save_to,
+    )
 
-# PLOTTING
-# plot gpx tracks
-fig = plt.figure(
-    num=None, figsize=(12, 8), dpi=80, facecolor="w", edgecolor="k"
-)
-gp.gpx_plot(fig, activity_gpx_track, ["Activity", ".", "k"])
-gp.gpx_plot(fig, gold_gpx_track, ["Gold", ".", "r"])
+    return 0
 
-# plot interpolated gpx tracks
-fig = plt.figure(
-    num=None, figsize=(12, 8), dpi=80, facecolor="w", edgecolor="k"
-)
-gpx_interpolated = gp.interpolate(activity_gpx_track_cropped)
-gp.gpx_plot(fig, gpx_interpolated.T, ["Activity Interpolated", ".", "k"])
-gp.gpx_plot(
-    fig, gold_gpx_track_interpolated.T, ["Gold Interpolated", ".", "r"]
-)
 
-plt.show()
+if __name__ == "__main__":
+    sys.exit(main())
