@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-label="geopard — did this activity actually run the segment, and how fast?">
+  <title>geopard</title>
+  <!-- The library's one idea, drawn: two tracks that are not the same shape,
+       tied point to point by dynamic time warping. The ties are deliberately
+       not one-to-one, because that stretching is the whole mechanism. -->
+  <rect width="1200" height="340" fill="#0E0E10"/>
+  <rect y="339" width="1200" height="1" fill="#2A2A2C"/>
+
+  <g font-family="Archivo, ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+    <circle cx="72" cy="74" r="4" fill="#E8820C"/>
+    <text x="88" y="79" font-size="14" font-weight="600" letter-spacing="2.2" fill="#A3A39D">GPX SEGMENT MATCHING</text>
+
+    <text x="70" y="182" font-size="92" letter-spacing="-4.2">
+      <tspan fill="#FDFDFB" font-weight="700">geo</tspan><tspan fill="#A3A39D" font-weight="400">pard</tspan>
+    </text>
+
+    <text x="72" y="238" font-size="25" fill="#A3A39D">Did this activity actually run the segment,</text>
+    <text x="72" y="274" font-size="25" fill="#A3A39D">and how fast?</text>
+
+    <text x="72" y="316" font-size="14" fill="#6F6F6B">Dynamic time warping over GPX tracks. No account, no upload, no service.</text>
+  </g>
+
+  <!-- warping ties -->
+  <g>
+    <line x1="795" y1="258" x2="795" y2="238" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="830" y1="248" x2="828" y2="230" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="862" y1="244" x2="828" y2="230" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="895" y1="226" x2="860" y2="220" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="925" y1="218" x2="894" y2="210" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="958" y1="200" x2="924" y2="196" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="988" y1="192" x2="957" y2="184" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1018" y1="168" x2="957" y2="184" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1048" y1="152" x2="987" y2="170" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1048" y1="152" x2="1017" y2="150" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1078" y1="128" x2="1047" y2="132" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1108" y1="112" x2="1107" y2="92" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+    <line x1="1140" y1="96" x2="1140" y2="74" stroke="#54545A" stroke-width="1.6" opacity="0.95"/>
+  </g>
+
+  <!-- the gold segment -->
+  <polyline points="795,258 830,248 862,244 895,226 925,218 958,200 988,192 1018,168 1048,152 1078,128 1108,112 1140,96" fill="none" stroke="#E8820C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- the activity -->
+  <polyline points="795,238 828,230 860,220 894,210 924,196 957,184 987,170 1017,150 1047,132 1077,110 1107,92 1140,74" fill="none" stroke="#FDFDFB" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- start and finish of the segment -->
+  <circle cx="795" cy="258" r="8" fill="#0E0E10" stroke="#E8820C" stroke-width="3.5"/>
+  <circle cx="1140" cy="96" r="8" fill="#E8820C"/>
+
+  <g font-family="Archivo, ui-sans-serif, sans-serif" font-size="13" fill="#6F6F6B">
+    <text x="812" y="292">start</text>
+    <text x="1092" y="62">finish</text>
+  </g>
+</svg>
